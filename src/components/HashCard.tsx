@@ -1,5 +1,6 @@
 import { Post } from "../types/common.types";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   data: Post[];
@@ -31,9 +32,7 @@ export default function PostCard(props: Props) {
       {filteredPosts.map((post, index) => {
         return (
           <li className="list-group-item py-3" key={index}>
-            <a href={`./views/index_post.html?postId=${post._id}`}>
-              {post.postTitle}
-            </a>
+            <Link to={`/${post._id}`}>{post.postTitle}</Link>
           </li>
         );
       })}

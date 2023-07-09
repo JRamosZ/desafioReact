@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Post, User } from "../types/common.types";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
 export default function PostCard(props: Post) {
   const [postAuthor, setPostAuthor] = useState<User>({});
@@ -31,12 +32,9 @@ export default function PostCard(props: Post) {
             <p className="card-text date-author text-mute">{`${props.postDateDay} ${props.postDateMonth}`}</p>
           </div>
         </div>
-        <a
-          className="ms-5 h4 textPointer"
-          href="./views/index_post.html?postId=64923cf172b8078a8a9a6f17"
-        >
+        <Link className="ms-5 h4 textPointer" to={`/${props._id}`}>
           {props.postTitle}
-        </a>
+        </Link>
         <div className="d-flex hashtag py-2 gap-3">
           {props.postTags.map((tag: string, index) => (
             <span key={index}>{`#${tag}`}</span>

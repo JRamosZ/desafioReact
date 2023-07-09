@@ -6,16 +6,12 @@ import PostCard from "../components/PostCard";
 import HashCard from "../components/HashCard";
 
 export default function Home() {
-  const token = localStorage.getItem("token");
   const [posts, setPosts] = useState<Post[]>([]);
 
   function getPostsFromAPI() {
     fetch("http://localhost:8080/posts")
       .then((resp) => resp.json())
       .then((resp) => {
-        // resp.data.sort(function (a, b) {
-        //   return b.postRelevance - a.postRelevance;
-        // });
         setPosts(resp.data);
       })
       .catch(() => {
@@ -49,108 +45,6 @@ export default function Home() {
   return (
     <>
       <section>
-        <ToastContainer />
-        <header className="header-container container-fluid">
-          <div className="nav_bar container-lg justify-content-between d-flex pt-2 pb-2 pe-3 ps-3">
-            <div className="nav_bar_conteriner_input">
-              <button id="hamburgerButton">☰</button>
-              <button id="indexButton" type="button">
-                <img
-                  className="logo__navbar__dev"
-                  src="./src/assets/Logo dev.svg"
-                  alt=""
-                />
-              </button>
-              <div id="searchBar">
-                <input
-                  id="searchBarInput"
-                  className="nav_bar_search card-filter"
-                  type="search"
-                  placeholder=" Search..."
-                />
-              </div>
-            </div>
-            {token && (
-              <div id="loggedIn" className="nav_bar_conteiner_login">
-                <button
-                  className="create-post button__post btn btn-outline-primary"
-                  type="button"
-                >
-                  <b>Create Post</b>
-                </button>
-                <img
-                  className="icon__campaign"
-                  src="./src/assets/icon campaign.svg"
-                  alt=""
-                />
-
-                <button
-                  type="button"
-                  className="login__icon btn dropdown-item shadow-large rounded pe-2 ps-2 mg-0"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  id="login_icon_open"
-                >
-                  <img
-                    id="userImgNavbar"
-                    src="./src/assets/icon login.svg"
-                    alt=""
-                  />
-                </button>
-                <ul className="login__icon__ul__drop dropdown-menu dropdown-menu-end border p-2 shadow-md">
-                  <li>
-                    <button
-                      className="dropdown-item d-flex flex-column justify-content-between pt-2 pb-2 rounded"
-                      type="button"
-                    >
-                      <p className="m-0">
-                        <strong id="userDropName">defaultUserName</strong>
-                      </p>
-                      <p id="userDropNick" className="m-0">
-                        @defaulUserNickname
-                      </p>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="create-post dropdown-item d-flex justify-content-between pt-2 pb-2 rounded"
-                      type="button"
-                    >
-                      Create Post
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      id="signOutButton"
-                      className="dropdown-item d-flex justify-content-between pt-2 pb-2 rounded"
-                      type="button"
-                    >
-                      Sign Out
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
-            {!token && (
-              <div id="notLoggedDiv" className="nav_bar_conteiner_login_one">
-                <button
-                  id="logIn"
-                  className="lod_in_log button__post btn btn-outline-primary"
-                  type="submit"
-                >
-                  <b>Log in</b>
-                </button>
-                <button
-                  id="createAccount"
-                  className="create_post_log button__post btn btn-outline-primary"
-                  type="submit"
-                >
-                  <b>Create account</b>
-                </button>
-              </div>
-            )}
-          </div>
-        </header>
         <main className="container_all container-fluid bg-light">
           <div className="container-lg pt-2">
             <div className="row">
@@ -464,46 +358,16 @@ export default function Home() {
                     Create a Listing
                   </p>
                 </ul>
-                <div id="hashLists">
-                  <HashCard name="code" data={posts} />
-                  <HashCard name="development" data={posts} />
-                </div>
+                {posts[0] && (
+                  <div id="hashLists">
+                    <HashCard name="code" data={posts} />
+                    <HashCard name="development" data={posts} />
+                  </div>
+                )}
               </aside>
             </div>
           </div>
         </main>
-        <footer className="container-fluid">
-          <div className="row">
-            <div className="footer col-12">
-              <p>
-                <a href="">DEV Community</a> — A constructive and inclusive
-                social network for software developers. With you every step of
-                your journey.
-              </p>
-              <p>
-                <a href="">Home</a>· <a href="">Listings</a> ·{" "}
-                <a href="">Podcasts</a> · <a href="">Videos</a> ·{" "}
-                <a href="">Tags</a> · <a href="">FAQ</a> · <a href="">Forem</a>{" "}
-                · <a href="">Shop</a> · <a href="">Sponsors</a> ·{" "}
-                <a href="">About</a> · <a href="">Contac</a> ·{" "}
-                <a href="">Guides</a> · <a href="">Software</a> ·{" "}
-                <a href="">comparisons</a>
-              </p>
-              <p>
-                <a href="">Code of Conduct · Privacy Policy · Terms of use</a>
-              </p>
-              <p>
-                Built on <a href="">Forem</a> — the <a href="">open source</a>{" "}
-                software that powers <a href="">DEV</a> and other inclusive
-                communities.
-              </p>
-              <p>
-                Made with love and <a href="">Ruby on Rails</a>. DEV Community ©
-                2016 - 2023.
-              </p>
-            </div>
-          </div>
-        </footer>
       </section>
     </>
   );
