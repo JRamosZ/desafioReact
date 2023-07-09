@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 export default function ReadNext() {
   const [posts, setPosts] = useState<Post[]>();
   const [randomPosts, setRandomPosts] = useState<number[]>();
+  const [authorImage, setAuthorImage] = useState<string>();
 
   useEffect(() => {
     fetch("http://localhost:8080/posts")
@@ -36,8 +37,7 @@ export default function ReadNext() {
     fetch(`http://localhost:8080/users/${id}`)
       .then((resp) => resp.json())
       .then((resp) => {
-        console.log(resp.data.userImage);
-        return resp.data.userImage;
+        setAuthorImage(resp.data.userImage);
       })
       .catch(() => {
         toast.error("Server fail");
@@ -49,12 +49,13 @@ export default function ReadNext() {
       <ToastContainer />
       <h3>Read next</h3>
       {randomPosts?.map((arrayIndex, index) => {
+        // getAuthorImage(posts[arrayIndex].postAuthorId);
         return (
           <div className="card-body" key={index}>
             <div className="author-data d-flex gap-3 align-items-center">
               <img
                 className="final-card__preview-image card-img-top"
-                src={`${getAuthorImage(posts[arrayIndex].postAuthorId)}`}
+                src={authorImage}
                 alt="img2-main-article"
               />
               <div>

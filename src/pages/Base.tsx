@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function Base() {
-  //   const navigate = useNavigate();
-  //   navigate("/posts");
+  const navigate = useNavigate();
+
+  function goToNew() {
+    navigate("/new");
+  }
+
   const token = localStorage.getItem("token");
   return (
     <>
@@ -33,12 +37,13 @@ export default function Base() {
           </div>
           {token && (
             <div id="loggedIn" className="nav_bar_conteiner_login">
-              <button
+              <Link
                 className="create-post button__post btn btn-outline-primary"
                 type="button"
+                to="/new"
               >
                 <b>Create Post</b>
-              </button>
+              </Link>
               <img
                 className="icon__campaign"
                 src="./src/assets/icon campaign.svg"
@@ -76,6 +81,7 @@ export default function Base() {
                   <button
                     className="create-post dropdown-item d-flex justify-content-between pt-2 pb-2 rounded"
                     type="button"
+                    onClick={() => goToNew()}
                   >
                     Create Post
                   </button>
