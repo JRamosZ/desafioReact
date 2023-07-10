@@ -1,17 +1,22 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Post, User } from "../types/common.types";
+import { Post, User, Token } from "../types/common.types";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MoreFrom from "../components/MoreFrom";
 import AuthorInfo from "../components/AuthorInfo";
-import ReadNext from "../components/ReadNext";
 import CommentCard from "../components/CommentCard";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 export default function PostView() {
+  window.scrollTo({ top: 0, left: 0 });
+  const navigate = useNavigate();
   const { id } = useParams();
+  const token = localStorage.getItem("token");
   const [post, setPost] = useState<Post>();
   const [postAuthor, setPostAutor] = useState<User>();
+  const [registeredUser, setRegisteredUser] = useState<User>();
 
   useEffect(() => {
     fetch(`http://localhost:8080/posts/${id || ""}`)
@@ -34,6 +39,48 @@ export default function PostView() {
         });
     }
   }, [post]);
+
+  useEffect(() => {
+    if (token) {
+      const payloadUser: string = token.split(".")[1];
+      const atobData: string = atob(payloadUser);
+      const data: Token = JSON.parse(atobData);
+      const userId = data?.id;
+      if (userId) {
+        fetch(`http://localhost:8080/users/${userId}`)
+          .then((resp) => resp.json())
+          .then((resp: { success: boolean; data: User }) => {
+            setRegisteredUser(resp.data);
+          })
+          .catch(() => {
+            toast.error("Server fail");
+          });
+      }
+    }
+  }, [token]);
+
+  function onDelete(id: string) {
+    fetch(`http://localhost:8080/posts/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res: { success: boolean; data: Post }) => {
+        if (res.success) {
+          void Swal.fire({
+            title: "Post borrado con éxito",
+            icon: "success",
+          });
+          navigate("/home");
+        } else {
+          toast.error(res.message);
+        }
+      })
+      .catch(() => toast.error("Server fail"));
+  }
+
   return (
     <section>
       <ToastContainer />
@@ -201,22 +248,25 @@ export default function PostView() {
                             </p>
                           </div>
                         </div>
-                        <div id="btnContainer" className="visually-hidden">
-                          <button
-                            id="btnDelete"
-                            type="button"
-                            className="btn btn-outline-danger"
-                          >
-                            Delete
-                          </button>
-                          <button
-                            id="btnEdit"
-                            type="button"
-                            className="btn btn-outline-secondary"
-                          >
-                            Edit
-                          </button>
-                        </div>
+                        {post && post?.postAuthorId === registeredUser?._id && (
+                          <div className="d-flex gap-3" id="btnContainer">
+                            <button
+                              id="btnDelete"
+                              type="button"
+                              className="btn btn-outline-danger"
+                              onClick={() => onDelete(post?._id)}
+                            >
+                              Delete
+                            </button>
+                            <button
+                              id="btnEdit"
+                              type="button"
+                              className="btn btn-outline-secondary"
+                            >
+                              Edit
+                            </button>
+                          </div>
+                        )}
                       </div>
                       <div className="reactions d-flex flex-row justify-content-between gap-3 gap-sm-5 justify-content-sm-start align-items-center me-0 ms-0 me-sm-2 ms-sm-2 me-md-5 ms-md-5 mt-4">
                         <div>
@@ -234,23 +284,16 @@ export default function PostView() {
                         <h2 id="titlePost" className="title1 display-5 mt-3">
                           {post?.postTitle}
                         </h2>
-                        <div className="tags mt-4">
-                          <a id="tag1" href="">
-                            {" "}
-                            <span>#</span>
-                          </a>
-                          <a id="tag2" href="">
-                            {" "}
-                            <span>#</span>
-                          </a>
-                          <a id="tag3" href="">
-                            {" "}
-                            <span>#</span>
-                          </a>
-                          <a id="tag4" href="">
-                            {" "}
-                            <span>#</span>
-                          </a>
+                        <div className="tags mt-3">
+                          {post?.postTags.map((tag, index) => {
+                            return (
+                              <a key={index} id={`tag${index + 1}`} href="">
+                                {" "}
+                                <span>#</span>
+                                {tag}
+                              </a>
+                            );
+                          })}
                         </div>
                       </div>
                       <div className="post-card__card-content">
@@ -319,37 +362,39 @@ export default function PostView() {
                           </div>
                         </div>
                       </div>
-                      <div
-                        className="d-flex gap-3 align-items-start mb-3"
-                        id="commentTextArea"
-                      >
-                        <img
-                          className="avatar-sm"
-                          src={postAuthor?.userImage}
-                          alt=""
-                          id="commentTextAreaImg"
-                        />
-                        <div className="flex-grow-1">
-                          <textarea
-                            name=""
-                            id="commentContent"
-                            cols={30}
-                            rows={4}
-                            className="form-control w-100 mb-3"
-                          ></textarea>
-                          <div className="d-flex gap-3">
-                            <button
-                              className="btn btn-dev-purple text-white"
-                              id="commentSubmit"
-                            >
-                              Submit
-                            </button>
-                            <button className="btn btn-secondary">
-                              Preview
-                            </button>
+                      {token && (
+                        <div
+                          className="d-flex gap-3 align-items-start mb-3"
+                          id="commentTextArea"
+                        >
+                          <img
+                            className="avatar-sm"
+                            src={registeredUser?.userImage}
+                            alt=""
+                            id="commentTextAreaImg"
+                          />
+                          <div className="flex-grow-1">
+                            <textarea
+                              name=""
+                              id="commentContent"
+                              cols={30}
+                              rows={4}
+                              className="form-control w-100 mb-3"
+                            ></textarea>
+                            <div className="d-flex gap-3">
+                              <button
+                                className="btn btn-dev-purple text-white"
+                                id="commentSubmit"
+                              >
+                                Submit
+                              </button>
+                              <button className="btn btn-secondary">
+                                Preview
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                       <div className="comments" id="postComments">
                         {post?.postComments.map((comment, index) => {
                           return <CommentCard key={index} data={comment} />;
@@ -388,82 +433,7 @@ export default function PostView() {
                     </div>
                   </div>
                 </div>
-                <div className="card final-card ">
-                  <ReadNext />
-                  {/* <div className="card-body">
-                    <h3>Read next</h3>
-                    <div className="card-body">
-                      <div className="author-data d-flex gap-3 align-items-center">
-                        <img
-                          className="final-card__preview-image card-img-top"
-                          src="https://randomuser.me/api/portraits/men/83.jpg"
-                          alt="img2-main-article"
-                        />
-                        <div>
-                          <a className="final-card__author-name" href="#">
-                            Best Crypto Tokens To Invest In 2023 for
-                            Crowdfunding Platforms
-                          </a>
-                          <p className="final-card__posted-date text-muted">
-                            JessieTomaz - May 12
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="card-body">
-                      <div className="author-data d-flex gap-3 align-items-center card-img-top">
-                        <img
-                          className="final-card__preview-image"
-                          src="https://randomuser.me/api/portraits/women/54.jpg"
-                          alt="img2-main-article"
-                        />
-                        <div>
-                          <a className="final-card__author-name" href="#">
-                            View Transitions API
-                          </a>
-                          <p className="final-card__posted-date text-muted">
-                            Andrew Bone -May 6
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="card-body">
-                      <div className="author-data d-flex gap-3 align-items-center">
-                        <img
-                          className="final-card__preview-image card-img-top"
-                          src="https://randomuser.me/api/portraits/men/34.jpg"
-                          alt="img2-main-article"
-                        />
-                        <div>
-                          <a className="final-card__author-name" href="#">
-                            How we implemented the card animation in Appwrite
-                            Cloud Public Beta
-                          </a>
-                          <p className="final-card__posted-date text-muted">
-                            Thomas G. Lopes - May 9
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="card-body">
-                      <div className="author-data d-flex gap-3 align-items-center">
-                        <img
-                          className="final-card__preview-image card-img-top"
-                          src="https://randomuser.me/api/portraits/men/66.jpg"
-                          alt="img2-main-article"
-                        />
-                        <div>
-                          <a className="final-card__author-name" href="#">
-                            AWS XRAY with FASTAPI
-                          </a>
-                          <p className="final-card__posted-date text-muted">
-                            Ashutosh Singh -Apr 12
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
-                </div>
+                <div className="card final-card ">{/* <ReadNext /> */}</div>
               </section>
               <aside className="col-12 col-lg-4 p-0 ps-lg-3 pt-lg-3 pb-lg-3 d-flex flex-column gap-3">
                 <div className="aside d-flex flex-column gap-3 h-100">

@@ -10,7 +10,7 @@ interface Props {
 export default function PostCard(props: Props) {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
 
-  function filterPosts() {
+  useEffect(() => {
     const postsList: Post[] = [];
     props.data.forEach((post) => {
       if (post.postTags.includes(props.name)) {
@@ -18,11 +18,7 @@ export default function PostCard(props: Props) {
       }
     });
     setFilteredPosts(postsList);
-  }
-
-  useEffect(() => {
-    filterPosts();
-  }, []);
+  }, [props.data, props.name]);
 
   return (
     <ul id="hashList1" className="list-group pt-1 mt-0 list-a">

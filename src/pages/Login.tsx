@@ -9,6 +9,7 @@ interface LoginData {
 }
 
 export default function Login() {
+  window.scrollTo({ top: 0, left: 0 });
   const navigate = useNavigate();
 
   const {

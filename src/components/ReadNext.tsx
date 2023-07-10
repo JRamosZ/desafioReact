@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 
 export default function ReadNext() {
   const [posts, setPosts] = useState<Post[]>();
-  const [randomPosts, setRandomPosts] = useState<number[]>();
-  const [authorImage, setAuthorImage] = useState<string>();
+  const [randomIndex, setRandomIndex] = useState<number[]>();
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:8080/posts")
@@ -22,59 +22,58 @@ export default function ReadNext() {
 
   useEffect(() => {
     if (posts) {
-      const arrayTest: number[] = [];
-      while (arrayTest.length < 4) {
+      const randomIndexArray: number[] = [];
+      while (randomIndexArray.length < 4) {
         const newIndex = Math.floor(Math.random() * posts.length);
-        if (!arrayTest.includes(newIndex)) {
-          arrayTest.push(newIndex);
+        if (!randomIndexArray.includes(newIndex)) {
+          randomIndexArray.push(newIndex);
         }
       }
-      setRandomPosts(arrayTest);
-    }
-  }, [posts]);
-
-  function getAuthorImage(id: string) {
-    fetch(`http://localhost:8080/users/${id}`)
-      .then((resp) => resp.json())
-      .then((resp: { success: boolean; data: User }) => {
-        setAuthorImage(resp.data.userImage);
-      })
-      .catch(() => {
-        toast.error("Server fail");
+      setRandomIndex(randomIndexArray);
+      randomIndexArray.forEach((arrayIndex) => {
+        fetch(`http://localhost:8080/users/${posts[arrayIndex].postAuthorId}`)
+          .then((resp) => resp.json())
+          .then((resp: { success: boolean; data: User }) => {
+            setImages([...images, resp.data.userImage]);
+          })
+          .catch(() => {
+            toast.error("Server fail");
+          });
       });
-  }
+    }
+  }, [posts, images]);
 
   return (
     <div className="card-body">
       <ToastContainer />
       <h3>Read next</h3>
-      {randomPosts?.map((arrayIndex, index) => {
-        // getAuthorImage(posts[arrayIndex].postAuthorId);
-        return (
-          <div className="card-body" key={index}>
-            <div className="author-data d-flex gap-3 align-items-center">
-              <img
-                className="final-card__preview-image card-img-top"
-                src={authorImage}
-                alt="img2-main-article"
-              />
-              {posts && (
-                <div>
-                  <Link
-                    className="final-card__author-name"
-                    to={`/${posts[arrayIndex]._id}`}
-                  >
-                    {posts[arrayIndex].postTitle}
-                  </Link>
-                  <p className="final-card__posted-date text-muted">
-                    {`${posts[arrayIndex].postAuthor} - ${posts[arrayIndex].postDateMonth} ${posts[arrayIndex].postDateDay}`}
-                  </p>
-                </div>
-              )}
+      {images.length > 0 &&
+        randomIndex?.map((indexArray, index) => {
+          return (
+            <div className="card-body" key={index}>
+              <div className="author-data d-flex gap-3 align-items-center">
+                {/* <img
+                  className="final-card__preview-image card-img-top"
+                  src={images[indexArray]}
+                  alt="img2-main-article"
+                /> */}
+                {posts && (
+                  <div>
+                    <Link
+                      className="final-card__author-name"
+                      to={`/${posts[indexArray]._id}`}
+                    >
+                      {posts[indexArray].postTitle}
+                    </Link>
+                    <p className="final-card__posted-date text-muted">
+                      {`${posts[indexArray].postAuthor} - ${posts[indexArray].postDateMonth} ${posts[indexArray].postDateDay}`}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
 
       {/* <div className="card-body">
         <div className="author-data d-flex gap-3 align-items-center">

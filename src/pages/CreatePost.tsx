@@ -48,7 +48,7 @@ export default function CreatePost() {
   function onSubmit(data: FormData) {
     const date = new Date();
     const submitData = {
-      postAuthor: userData?.userName,
+      postAuthor: `${userData?.userName || ""} ${userData?.userLastname || ""}`,
       postAuthorId: userId,
       postComments: [],
       postContent: data.postContent,

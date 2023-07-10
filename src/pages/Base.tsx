@@ -23,17 +23,17 @@ export default function Base() {
           .then((resp) => resp.json())
           .then((resp: { success: boolean; data: User }) => {
             setUserData(resp.data);
+            navigate("/home");
           })
           .catch(() => {
             toast.error("Server fail");
           });
       }
+    } else {
+      navigate("/home");
     }
   }, [token]);
 
-  // useEffect(() => {
-  //   navigate("/home");
-  // }, []);
   return (
     <>
       <ToastContainer />
@@ -41,7 +41,7 @@ export default function Base() {
         <div className="nav_bar container-lg justify-content-between d-flex pt-2 pb-2 pe-3 ps-3">
           <div className="nav_bar_conteriner_input">
             <button id="hamburgerButton">☰</button>
-            <Link id="indexButton" type="button" to="./home">
+            <Link id="indexButton" to="/home">
               <img
                 className="logo__navbar__dev"
                 src="./src/assets/Logo dev.svg"
@@ -109,6 +109,10 @@ export default function Base() {
                     id="signOutButton"
                     className="dropdown-item d-flex justify-content-between pt-2 pb-2 rounded"
                     type="button"
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      navigate("/");
+                    }}
                   >
                     Sign Out
                   </button>
