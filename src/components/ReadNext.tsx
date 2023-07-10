@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { Post } from "../types/common.types";
+import { Post, User } from "../types/common.types";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 
@@ -12,7 +12,7 @@ export default function ReadNext() {
   useEffect(() => {
     fetch("http://localhost:8080/posts")
       .then((resp) => resp.json())
-      .then((resp) => {
+      .then((resp: { success: boolean; data: Post[] }) => {
         setPosts(resp.data);
       })
       .catch(() => {
@@ -36,7 +36,7 @@ export default function ReadNext() {
   function getAuthorImage(id: string) {
     fetch(`http://localhost:8080/users/${id}`)
       .then((resp) => resp.json())
-      .then((resp) => {
+      .then((resp: { success: boolean; data: User }) => {
         setAuthorImage(resp.data.userImage);
       })
       .catch(() => {
@@ -58,17 +58,19 @@ export default function ReadNext() {
                 src={authorImage}
                 alt="img2-main-article"
               />
-              <div>
-                <Link
-                  className="final-card__author-name"
-                  to={`/${posts[arrayIndex]._id}`}
-                >
-                  {posts[arrayIndex].postTitle}
-                </Link>
-                <p className="final-card__posted-date text-muted">
-                  {`${posts[arrayIndex].postAuthor} - ${posts[arrayIndex].postDateMonth} ${posts[arrayIndex].postDateDay}`}
-                </p>
-              </div>
+              {posts && (
+                <div>
+                  <Link
+                    className="final-card__author-name"
+                    to={`/${posts[arrayIndex]._id}`}
+                  >
+                    {posts[arrayIndex].postTitle}
+                  </Link>
+                  <p className="final-card__posted-date text-muted">
+                    {`${posts[arrayIndex].postAuthor} - ${posts[arrayIndex].postDateMonth} ${posts[arrayIndex].postDateDay}`}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         );

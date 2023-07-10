@@ -11,7 +11,7 @@ export default function PostCard(props: Props) {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
 
   function filterPosts() {
-    let postsList = [];
+    const postsList: Post[] = [];
     props.data.forEach((post) => {
       if (post.postTags.includes(props.name)) {
         postsList.push(post);

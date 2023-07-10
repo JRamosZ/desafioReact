@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MoreFrom from "../components/MoreFrom";
 import AuthorInfo from "../components/AuthorInfo";
 import ReadNext from "../components/ReadNext";
+import CommentCard from "../components/CommentCard";
 
 export default function PostView() {
   const { id } = useParams();
@@ -176,7 +177,7 @@ export default function PostView() {
                     />
                     <div className="card-body">
                       <div className="d-flex justify-content-between align-items-center">
-                        <div className="author-data d-flex gap-3 align-items-center mt-3 ms-3">
+                        <div className="author-data d-flex gap-3 align-items-center mt-3 ms-5">
                           <img
                             id="authorImage"
                             className="post-card__preview-image card-img-top"
@@ -217,7 +218,7 @@ export default function PostView() {
                           </button>
                         </div>
                       </div>
-                      <div className="reactions d-flex flex-row justify-content-between gap-3 gap-sm-5 justify-content-sm-start align-items-center me-0 ms-0 me-sm-2 ms-sm-2 me-md-5 ms-md-5 mt-5">
+                      <div className="reactions d-flex flex-row justify-content-between gap-3 gap-sm-5 justify-content-sm-start align-items-center me-0 ms-0 me-sm-2 ms-sm-2 me-md-5 ms-md-5 mt-4">
                         <div>
                           💖{" "}
                           <span id="likeCounterInMainCard">
@@ -230,7 +231,7 @@ export default function PostView() {
                         <div>🔥</div>
                       </div>
                       <div className="title, me-0 ms-0 me-sm-2 ms-sm-2 me-md-5 ms-md-5">
-                        <h2 id="titlePost" className="title1 display-5">
+                        <h2 id="titlePost" className="title1 display-5 mt-3">
                           {post?.postTitle}
                         </h2>
                         <div className="tags mt-4">
@@ -349,7 +350,11 @@ export default function PostView() {
                           </div>
                         </div>
                       </div>
-                      <div className="comments" id="postComments"></div>
+                      <div className="comments" id="postComments">
+                        {post?.postComments.map((comment, index) => {
+                          return <CommentCard key={index} data={comment} />;
+                        })}
+                      </div>
                       <div className="d-flex justify-content-center gap-3 align-items-center">
                         <a className="comments-footer__text" href="#">
                           Code of Conduct

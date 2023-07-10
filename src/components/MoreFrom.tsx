@@ -14,7 +14,7 @@ export default function MoreFrom(props: Props) {
   useEffect(() => {
     fetch("http://localhost:8080/posts")
       .then((resp) => resp.json())
-      .then((resp) => {
+      .then((resp: { success: boolean; data: Post[] }) => {
         setPosts(resp.data);
       })
       .catch(() => {
@@ -27,7 +27,7 @@ export default function MoreFrom(props: Props) {
       (post) => post.postAuthorId === props.authorId
     );
     setFilteredPosts(postsList);
-  }, [posts]);
+  }, [posts, props.authorId]);
 
   return (
     <div
@@ -44,7 +44,11 @@ export default function MoreFrom(props: Props) {
       {filteredPosts.map((post, index) => {
         return (
           <>
-            <Link to={`/${post?._id}`} className="aside-card2__anchor2">
+            <Link
+              key={index}
+              to={`/${post?._id}`}
+              className="aside-card2__anchor2"
+            >
               <p className="aside-card2__paragraph1">{post?.postTitle}</p>
               <div className="d-flex gap-3">
                 {post.postTags.map((tag: string, index) => {

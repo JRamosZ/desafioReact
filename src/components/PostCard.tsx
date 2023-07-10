@@ -5,12 +5,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 
 export default function PostCard(props: Post) {
-  const [postAuthor, setPostAuthor] = useState<User>({});
+  const [postAuthor, setPostAuthor] = useState<User>();
 
   function getAuthorPicture(id: string) {
-    fetch(`http://localhost:8080/users/${id}`)
+    fetch(`http://localhost:8080/users/${id || ""}`)
       .then((resp) => resp.json())
-      .then((resp) => {
+      .then((resp: { success: boolean; data: User }) => {
         setPostAuthor(resp.data);
       })
       .catch(() => toast.error("Server fail"));
@@ -26,7 +26,10 @@ export default function PostCard(props: Post) {
       <img src={props.postImageURL} className="card-img-top w-100 imgList" />
       <div className="card ps-3 border-0 pb-3">
         <div className="data-name">
-          <img src={postAuthor.userImage} className="card-img-top img-circle" />
+          <img
+            src={postAuthor?.userImage}
+            className="card-img-top img-circle"
+          />
           <div className="card-body pb-1">
             <h5 className="card-title name-author">{props.postAuthor}</h5>
             <p className="card-text date-author text-mute">{`${props.postDateDay} ${props.postDateMonth}`}</p>

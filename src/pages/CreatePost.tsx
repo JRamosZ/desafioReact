@@ -5,6 +5,7 @@ import { Post, User } from "../types/common.types";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 interface FormData {
   postImageURL: string;
@@ -21,7 +22,7 @@ export default function CreatePost() {
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<Post>();
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function CreatePost() {
       if (userId) {
         fetch(`http://localhost:8080/users/${userId}`)
           .then((resp) => resp.json())
-          .then((resp) => {
+          .then((resp: { success: boolean; data: User }) => {
             setUserData(resp.data);
           })
           .catch(() => {
@@ -64,15 +65,18 @@ export default function CreatePost() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
       },
       body: JSON.stringify(submitData),
     })
       .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
+      .then((res: { success: boolean; data: Post; message: string }) => {
         if (res.success) {
-          toast.success("Successfully Uploaded");
+          void Swal.fire({
+            title: "Post guardado con éxito",
+            icon: "success",
+          });
+          navigator("/home");
         } else {
           toast.error(res.message);
         }

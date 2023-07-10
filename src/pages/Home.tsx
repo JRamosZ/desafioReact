@@ -11,7 +11,7 @@ export default function Home() {
   function getPostsFromAPI() {
     fetch("http://localhost:8080/posts")
       .then((resp) => resp.json())
-      .then((resp) => {
+      .then((resp: { success: boolean; data: Post[] }) => {
         setPosts(resp.data);
       })
       .catch(() => {
@@ -45,6 +45,7 @@ export default function Home() {
   return (
     <>
       <section>
+        <ToastContainer />
         <main className="container_all container-fluid bg-light">
           <div className="container-lg pt-2">
             <div className="row">

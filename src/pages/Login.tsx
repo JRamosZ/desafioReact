@@ -14,7 +14,7 @@ export default function Login() {
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<LoginData>();
 
   function onSubmit(data: LoginData) {
@@ -24,9 +24,9 @@ export default function Login() {
       body: JSON.stringify(data),
     })
       .then((resp) => resp.json())
-      .then((resp) => {
-        if (resp?.token) {
-          localStorage.setItem("token", resp?.token);
+      .then((resp: { success: boolean; token: string }) => {
+        if (resp.token) {
+          localStorage.setItem("token", resp.token);
           navigate("/home");
         } else {
           toast.error("Invalid Data");

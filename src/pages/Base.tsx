@@ -3,16 +3,37 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { User, Token } from "../types/common.types";
 
 export default function Base() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate("/home");
-  }, [navigate]);
+  const [userData, setUserData] = useState<User>();
 
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (token) {
+      const payloadUser: string = token.split(".")[1];
+      const atobData: string = atob(payloadUser);
+      const data: Token = JSON.parse(atobData);
+      const userId = data.id;
+      if (userId) {
+        fetch(`http://localhost:8080/users/${userId}`)
+          .then((resp) => resp.json())
+          .then((resp: { success: boolean; data: User }) => {
+            setUserData(resp.data);
+          })
+          .catch(() => {
+            toast.error("Server fail");
+          });
+      }
+    }
+  }, [token]);
+
+  // useEffect(() => {
+  //   navigate("/home");
+  // }, []);
   return (
     <>
       <ToastContainer />
@@ -58,11 +79,7 @@ export default function Base() {
                 aria-expanded="false"
                 id="login_icon_open"
               >
-                <img
-                  id="userImgNavbar"
-                  src="./src/assets/icon login.svg"
-                  alt=""
-                />
+                <img id="userImgNavbar" src={userData?.userImage} alt="" />
               </button>
               <ul className="login__icon__ul__drop dropdown-menu dropdown-menu-end border p-2 shadow-md">
                 <li>
@@ -74,7 +91,7 @@ export default function Base() {
                       <strong id="userDropName">defaultUserName</strong>
                     </p>
                     <p id="userDropNick" className="m-0">
-                      @defaulUserNickname
+                      {`@${userData?.userNickName || ""}`}
                     </p>
                   </button>
                 </li>
