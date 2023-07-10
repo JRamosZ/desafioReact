@@ -10,11 +10,7 @@ interface LoginData {
 
 export default function Login() {
   const navigate = useNavigate();
-  //   const token = localStorage.getItem("token");
-  //   console.log(token);
-  //   if (token) {
-  //     navigate("/posts");
-  //   }
+
   const {
     handleSubmit,
     register,

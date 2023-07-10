@@ -3,13 +3,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Base() {
   const navigate = useNavigate();
 
-  function goToNew() {
-    navigate("/new");
-  }
+  useEffect(() => {
+    navigate("/home");
+  }, [navigate]);
 
   const token = localStorage.getItem("token");
   return (
@@ -81,7 +82,7 @@ export default function Base() {
                   <button
                     className="create-post dropdown-item d-flex justify-content-between pt-2 pb-2 rounded"
                     type="button"
-                    onClick={() => goToNew()}
+                    onClick={() => navigate("/new")}
                   >
                     Create Post
                   </button>
@@ -100,13 +101,13 @@ export default function Base() {
           )}
           {!token && (
             <div id="notLoggedDiv" className="nav_bar_conteiner_login_one">
-              <button
+              <Link
+                to="/login"
                 id="logIn"
                 className="lod_in_log button__post btn btn-outline-primary"
-                type="submit"
               >
                 <b>Log in</b>
-              </button>
+              </Link>
               <button
                 id="createAccount"
                 className="create_post_log button__post btn btn-outline-primary"

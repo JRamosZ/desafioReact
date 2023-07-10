@@ -1,6 +1,7 @@
 .editor-bar {
   background: #f9f9f9;
   height: 55px;
+  margin: 35px -48px;
 }
 @media (max-width: 768px) {
   .editor-bar {

@@ -13,9 +13,9 @@ export default function PostView() {
   const [postAuthor, setPostAutor] = useState<User>();
 
   useEffect(() => {
-    fetch(`http://localhost:8080/posts/${id}`)
+    fetch(`http://localhost:8080/posts/${id || ""}`)
       .then((resp) => resp.json())
-      .then((resp) => setPost(resp.data))
+      .then((resp: { success: object; data: Post }) => setPost(resp.data))
       .catch(() => {
         toast.error("Server fail");
       });
@@ -25,7 +25,9 @@ export default function PostView() {
     if (post?.postAuthorId) {
       fetch(`http://localhost:8080/users/${post.postAuthorId}`)
         .then((resp) => resp.json())
-        .then((resp) => setPostAutor(resp.data))
+        .then((resp: { success: object; data: User }) =>
+          setPostAutor(resp.data)
+        )
         .catch(() => {
           toast.error("Server fail");
         });
@@ -33,6 +35,7 @@ export default function PostView() {
   }, [post]);
   return (
     <section>
+      <ToastContainer />
       <main className="main-container container-lg">
         <div>
           <div className="d-flex flex-column-reverse flex-md-row">
@@ -191,7 +194,9 @@ export default function PostView() {
                               id="posted-date"
                               className="post-card__posted-date"
                             >
-                              {`Posted on ${post?.postDateMonth} ${post?.postDateDay}`}
+                              {`Posted on ${post?.postDateMonth || ""} ${
+                                post?.postDateDay || ""
+                              }`}
                             </p>
                           </div>
                         </div>
