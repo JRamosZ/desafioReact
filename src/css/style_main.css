@@ -799,4 +799,8 @@ a {
   background-color: white;
   color: #3b49df;
   border: thin solid 3px lightgrey;
+}
+
+#relevantLatestTitle:hover {
+  color: #2f3bb2;
 }/*# sourceMappingURL=style_main.css.map */

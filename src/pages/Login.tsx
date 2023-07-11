@@ -9,11 +9,13 @@ interface LoginData {
 }
 
 export default function Login() {
+  window.scrollTo({ top: 0, left: 0 });
   const navigate = useNavigate();
+
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<LoginData>();
 
   function onSubmit(data: LoginData) {
@@ -23,10 +25,10 @@ export default function Login() {
       body: JSON.stringify(data),
     })
       .then((resp) => resp.json())
-      .then((resp) => {
-        if (resp?.token) {
-          localStorage.setItem("token", resp?.token);
-          navigate("/");
+      .then((resp: { success: boolean; token: string }) => {
+        if (resp.token) {
+          localStorage.setItem("token", resp.token);
+          navigate("/home");
         } else {
           toast.error("Invalid Data");
         }
@@ -38,43 +40,6 @@ export default function Login() {
   return (
     <section>
       <ToastContainer />
-      <header className="header-container container-fluid">
-        <div className="nav_bar container-lg justify-content-between d-flex pt-2 pb-2 pe-3 ps-3">
-          <div className="nav_bar_conteriner_input">
-            <button id="hamburgerButton">☰</button>
-            <button id="indexButton" type="button">
-              <img
-                className="logo__navbar__dev"
-                src="./src/assets/Logo dev.svg"
-              />
-            </button>
-            <label>
-              <input
-                className="nav_bar_search"
-                type="search"
-                placeholder=" Search..."
-              />
-            </label>
-          </div>
-          <div className="nav_bar_conteiner_login">
-            <button
-              id="logIn"
-              className="lod_in_log button__post btn btn-outline-primary"
-              type="submit"
-            >
-              <b>Log in</b>
-            </button>
-            <button
-              id="createAccount"
-              className="create_post_log button__post btn btn-outline-primary"
-              type="submit"
-            >
-              <b>Create account</b>
-            </button>
-          </div>
-        </div>
-      </header>
-
       <main className="container_all container-fluid bg-light">
         <div className="container py-3 ">
           <div className="row justify-content-center">
@@ -229,39 +194,6 @@ export default function Login() {
           </div>
         </div>
       </main>
-
-      <footer className="container-fluid">
-        <div className="row">
-          <div className="footer col-12">
-            <p>
-              <a href="">DEV Community</a> — A constructive and inclusive social
-              network for software developers. With you every step of your
-              journey.
-            </p>
-            <p>
-              <a href="">Home</a>· <a href="">Listings</a> ·{" "}
-              <a href="">Podcasts</a> · <a href="">Videos</a> ·{" "}
-              <a href="">Tags</a> · <a href="">FAQ</a> · <a href="">Forem</a> ·{" "}
-              <a href="">Shop</a> · <a href="">Sponsors</a> ·{" "}
-              <a href="">About</a> · <a href="">Contac</a> ·{" "}
-              <a href="">Guides</a> · <a href="">Software</a> ·{" "}
-              <a href="">comparisons</a>
-            </p>
-            <p>
-              <a href="">Code of Conduct · Privacy Policy · Terms of use</a>
-            </p>
-            <p>
-              Built on <a href="">Forem</a> — the <a href="">open source</a>{" "}
-              software that powers <a href="">DEV</a> and other inclusive
-              communities.
-            </p>
-            <p>
-              Made with love and <a href="">Ruby on Rails</a>. DEV Community ©
-              2016 - 2023.
-            </p>
-          </div>
-        </div>
-      </footer>
     </section>
   );
 }

@@ -26,3 +26,20 @@ export interface User {
   userNickName: string;
   userPassword: string;
 }
+
+export interface Token {
+  exp: number;
+  iat: number;
+  id: string;
+  userImage: string;
+  userName: string;
+  userNickName: string;
+}
+
+export interface Comment {
+  commentAuthorId: string;
+  commentAuthorImg: string;
+  commentAuthorName: string;
+  commentDate: string;
+  commentText: string;
+}

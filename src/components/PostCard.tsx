@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { Post, User } from "../types/common.types";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
 export default function PostCard(props: Post) {
-  const [postAuthor, setPostAuthor] = useState<User>({});
+  const [postAuthor, setPostAuthor] = useState<User>();
 
   function getAuthorPicture(id: string) {
-    fetch(`http://localhost:8080/users/${id}`)
+    fetch(`http://localhost:8080/users/${id || ""}`)
       .then((resp) => resp.json())
-      .then((resp) => {
+      .then((resp: { success: boolean; data: User }) => {
         setPostAuthor(resp.data);
       })
       .catch(() => toast.error("Server fail"));
@@ -25,18 +26,18 @@ export default function PostCard(props: Post) {
       <img src={props.postImageURL} className="card-img-top w-100 imgList" />
       <div className="card ps-3 border-0 pb-3">
         <div className="data-name">
-          <img src={postAuthor.userImage} className="card-img-top img-circle" />
+          <img
+            src={postAuthor?.userImage}
+            className="card-img-top img-circle"
+          />
           <div className="card-body pb-1">
             <h5 className="card-title name-author">{props.postAuthor}</h5>
             <p className="card-text date-author text-mute">{`${props.postDateDay} ${props.postDateMonth}`}</p>
           </div>
         </div>
-        <a
-          className="ms-5 h4 textPointer"
-          href="./views/index_post.html?postId=64923cf172b8078a8a9a6f17"
-        >
+        <Link className="ms-5 h4 textPointer" to={`/${props._id}`}>
           {props.postTitle}
-        </a>
+        </Link>
         <div className="d-flex hashtag py-2 gap-3">
           {props.postTags.map((tag: string, index) => (
             <span key={index}>{`#${tag}`}</span>
