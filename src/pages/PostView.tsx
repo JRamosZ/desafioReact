@@ -10,10 +10,12 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 export default function PostView() {
-  window.scrollTo({ top: 0, left: 0 });
+  // window.scrollTo({ top: 0, left: 0 });
   const navigate = useNavigate();
   const { id } = useParams();
   const token = localStorage.getItem("token");
+
+  const [comment, setComment] = useState<string>();
   const [post, setPost] = useState<Post>();
   const [postAuthor, setPostAutor] = useState<User>();
   const [registeredUser, setRegisteredUser] = useState<User>();
@@ -39,7 +41,6 @@ export default function PostView() {
         });
     }
   }, [post]);
-
   useEffect(() => {
     if (token) {
       const payloadUser: string = token.split(".")[1];
@@ -81,6 +82,62 @@ export default function PostView() {
       .catch(() => toast.error("Server fail"));
   }
 
+  function onSubmit() {
+    const dataToSubmit = {
+      commentAuthorId: registeredUser?._id,
+      commentAuthorImg: registeredUser?.userImage,
+      commentAuthorName: `${registeredUser?.userName || ""} ${
+        registeredUser?.userLastname || ""
+      }`,
+      commentDate: new Date().toDateString(),
+      commentText: comment,
+    };
+    console.log("id", registeredUser?._id);
+    fetch(`http://localhost:8080/posts/${post?._id}/comments`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(dataToSubmit),
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        if (resp.success) {
+          window.location.reload(false);
+        } else {
+          toast.error(resp.message);
+        }
+      })
+      .catch(() => {
+        toast.error("Server fail");
+      });
+  }
+
+  function postLike() {
+    const dataToSubmit = {
+      likeAuthorId: registeredUser?._id,
+    };
+    fetch(`http://localhost:8080/posts/${post?._id}/likes`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(dataToSubmit),
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        if (resp.success) {
+          window.location.reload();
+        } else {
+          toast.error(resp.message);
+        }
+      })
+      .catch(() => {
+        toast.error("Server fail");
+      });
+  }
   return (
     <section>
       <ToastContainer />
@@ -95,6 +152,7 @@ export default function PostView() {
                       type="button"
                       className="nav-left__drop__button_h1 btn border-0 dropdown d-flex  align-content-center justify-content-center"
                       id="likeButtonAdd"
+                      onClick={postLike}
                     >
                       <span
                         className="material-symbols-outlined more_horiz m-0"
@@ -380,11 +438,16 @@ export default function PostView() {
                               cols={30}
                               rows={4}
                               className="form-control w-100 mb-3"
+                              onChange={(event) =>
+                                setComment(event.target.value)
+                              }
+                              value={comment}
                             ></textarea>
                             <div className="d-flex gap-3">
                               <button
                                 className="btn btn-dev-purple text-white"
                                 id="commentSubmit"
+                                onClick={onSubmit}
                               >
                                 Submit
                               </button>
@@ -396,7 +459,7 @@ export default function PostView() {
                         </div>
                       )}
                       <div className="comments" id="postComments">
-                        {post?.postComments.map((comment, index) => {
+                        {post?.postComments.reverse().map((comment, index) => {
                           return <CommentCard key={index} data={comment} />;
                         })}
                       </div>
