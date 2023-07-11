@@ -23,15 +23,16 @@ export default function Base() {
           .then((resp) => resp.json())
           .then((resp: { success: boolean; data: User }) => {
             setUserData(resp.data);
-            navigate("/home");
+            // navigate("/home");
           })
           .catch(() => {
             toast.error("Server fail");
           });
       }
-    } else {
-      navigate("/home");
     }
+    // else {
+    //   navigate("/home");
+    // }
   }, [token]);
 
   return (
@@ -88,7 +89,9 @@ export default function Base() {
                     type="button"
                   >
                     <p className="m-0">
-                      <strong id="userDropName">defaultUserName</strong>
+                      <strong id="userDropName">{`${userData?.userName || ""} ${
+                        userData?.userLastname || ""
+                      }`}</strong>
                     </p>
                     <p id="userDropNick" className="m-0">
                       {`@${userData?.userNickName || ""}`}
